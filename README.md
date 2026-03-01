@@ -1,5 +1,3 @@
-# The Freeze Project
-
-Welcome to the Freeze Project, an opensourced debian operating system.
+# This is an outdated version of FreezeOS
 
 Website: https://freezeos.org/
