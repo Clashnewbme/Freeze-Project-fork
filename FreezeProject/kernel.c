@@ -5,12 +5,8 @@ const unsigned int multiboot_header[] = {
     -(0x1BADB002 + 0x00000003)
 };
 
+#include "memory.h"
 #include <stdint.h>
-#define MAX_USERS 10
-#define MAX_NAME  32
-
-char users[MAX_USERS][MAX_NAME];
-int user_count = 0;
 
 /* serial I/o*/
 extern void serial_putc(char c);
@@ -227,8 +223,6 @@ void handle_command(char *buf){
         print("Freeze Project 0.5\n");
     } else if(strcmp(buf,"uname")==1){
         print("Freeze Project 0.5, SMP i386 GNU\n");
-    } else if(strcmp(buf,"uptime")==1){
-        print("05:00:00 up 12 days, 3:45, 1 user, load average: 0.15, 0.10, 0.08\n");
     } else if(strcmp(buf,"date")==1){
         int sec,min,hour,day,mon,year;
 
@@ -263,19 +257,18 @@ void handle_command(char *buf){
     } else if(strcmp(buf,"ps")==1){
         print("PID USER COMMAND\n1   root kernel\n2   root systemd\n");
     } else if(strcmp(buf,"top")==1){
-        print("PID %%CPU %%MEM COMMAND\n1   5.2  12.5 kernel\n2   1.1  8.3  systemd\n");
+        print("PID %%CPU %%MEM COMMAND\n");
+        print("1   Unknown    Unknown    kernel\n");
     } else if(strcmp(buf,"lsmod")==1){
         print("Module       Size\nserial_core  2048\n");
     } else if(strcmp(buf,"dmesg")==1){
-        print("[0.000000] Booting Freeze Project v0.5\n[0.001000] VGA buffer initialized\n");
+        print("[0.000000] Booting Freeze Project v0.6\n[0.001000] VGA buffer initialized\n");
     } else if(strcmp(buf,"systemctl")==1){
         print("Usage: systemctl [start|stop|status|restart] <service>\n");
     } else if(strcmp(buf,"shutdown")==1){
         print("Shutting down...\n"); outb(0x64,0xFE); for(;;);
     } else if(strcmp(buf,"ls")==1){
         print("boot/  kernel.bin  grub/  README.md\n");
-    } else if(strcmp(buf,"pwd")==1){
-        print("/root\n");
     } else if(strcmp(buf,"file")==1){
         print("kernel.bin: ELF 32-bit LSB executable\n");
     } else if(strcmp(buf,"stat")==1){
