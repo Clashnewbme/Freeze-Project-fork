@@ -221,8 +221,6 @@ void handle_command(char *buf){
         print("Forking while forking...\n"); outb(0x64,0xFE); for(;;);
     } else if(strcmp(buf,"version")==1){
         print("Freeze Project 0.5\n");
-    } else if(strcmp(buf,"uname")==1){
-        print("Freeze Project 0.5, SMP i386 GNU\n");
     } else if(strcmp(buf,"date")==1){
         int sec,min,hour,day,mon,year;
 
@@ -366,25 +364,17 @@ void handle_command(char *buf){
         print("\033[92mhttps://freezeos.org/\033[0m\n");
         print("\033[93mDeveloped by @Clashnewbme, @Crystal_Nitr0, and others.\033[0m\n\n");
         print("\033[94m--------------------------------\033[0m\n");
-        print("\033[92mCurrently: \033[93mVersion 0.60\033[0m\n");
-    } else if(strcmp(buf,"make")==1){
-        print("GNU Make 4.3\n");
-    } else if(strcmp(buf,"bash")==1){
-        print("GNU bash, version 5.1.0\n");
+        print("\033[92mCurrently: \033[93mVersion 0.62\033[0m\n");
     } else if(strcmp(buf,"sh")==1){
         print("POSIX shell\n");
-    } else if(strcmp(buf,"man")==1){
-        print("Manual page: see 'help' for available commands\n");
-    } else if(strcmp(buf,"which")==1){
-        print("Usage: which <command>\n");
     } else if(strcmp(buf, "freezefetch") == 1){
         print("\n");
         
         print("        █████████████        FreezeOS\n");
         print("     ███████████████████     ------------\n");
         print("   ███████████████████████   OS: FreezeOS\n");
-        print("  █████████████████████████  Created by: Clashnewbme, Crystal_Nitr0\n");
-        print(" ████████  ███████  ████████ https://freezeos.org/\n");
+        print("  █████████████████████████  Kernel: x86\n");
+        print(" ████████  ███████  ████████ Version 0.62\n");
         print(" ███████    █████    ███████ \n");
         print(" ███████   ██   ██   ███████ \n");
         print("  ███████   \\___/   ███████ \n");
@@ -434,10 +424,14 @@ void handle_command(char *buf){
 void shell(){
     char buf[128];
     while(1){
-        print("$ ");
+        print("\033[95mFreeze-OS>\033[0m ");
         get_input(buf);
         if(startswith(buf,"sudo ")){
             print("[sudo] ");
+            char *rest = buf + 5;
+            handle_command(rest);
+        } else if(startswith(buf,"freeze ")){
+            print("[freeze] ");
             char *rest = buf + 5;
             handle_command(rest);
         } else {
@@ -453,7 +447,7 @@ void kernel_main(void){
     print("\033[92mhttps://freezeos.org/\033[0m\n");
     print("\033[93mType 'help' for help on learning commands\033[0m\n\n");
     print("\033[94m--------------------------------\033[0m\n");
-    print("\033[92mCurrently: \033[93mVersion 0.60\033[0m\n");
+    print("\033[92mCurrently: \033[93mVersion 0.62\033[0m\n");
 
     shell();
 }
