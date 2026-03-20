@@ -528,7 +528,7 @@ void handle_command(char *buf){
         print("        \n");
         print("\033[95m=== DIGITAL LIBRARY ===\033[0m\n");
         print("Choose a book (1)\n");
-        print("(theres only 2 rn)");
+        print("(theres only 1 (Frankenstein))\n");
 
         int running = 1;
 
