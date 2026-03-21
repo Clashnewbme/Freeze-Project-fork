@@ -50,7 +50,8 @@ freeze.iso: $(BUILDDIR)/kernel.bin iso/boot/grub/grub.cfg
 	mkdir -p iso/boot/grub
 	cp $(BUILDDIR)/kernel.bin iso/boot/
 	grub-mkrescue -o freeze.iso iso
-
+run: freeze.iso
+	qemu-system-i386 -cdrom freeze.iso -nographic
 clean:
 	rm -rf $(BUILDDIR) freeze.iso
 	rm -rf iso
