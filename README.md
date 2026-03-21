@@ -38,8 +38,9 @@ Created by Clashnewbme, and volunteers.
 
 ## To make files
 
-> make
-> FreezeProject/build/kernel.bin && make run
+```bash
+make FreezeProject/build/kernel.bin && make run
+```
 
 ---
 
