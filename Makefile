@@ -17,9 +17,21 @@ crt.o: FreezeProject/crt.c
 
 serial.o: FreezeProject/serial.c
 	$(CC) $(CFLAGS) -c FreezeProject/serial.c -o serial.o
+input.o: FreezeProject/input.c
+	$(CC) $(CFLAGS) -c FreezeProject/input.c -o input.o
+memory.o: FreezeProject/memory.c
+	$(CC) $(CFLAGS) -c FreezeProject/memory.c -o memory.o
+rtc.o: FreezeProject/rtc.c
+	$(CC) $(CFLAGS) -c FreezeProject/rtc.c -o rtc.o
+shell.o: FreezeProject/shell.c
+	$(CC) $(CFLAGS) -c FreezeProject/shell.c -o shell.o
+timer.o: FreezeProject/timer.c
+	$(CC) $(CFLAGS) -c FreezeProject/timer.c -o timer.o
+vga.o: FreezeProject/vga.c
+	$(CC) $(CFLAGS) -c FreezeProject/vga.c -o vga.o
 
-kernel.bin: start.o crt.o serial.o kernel.o FreezeProject/linker.ld
-	$(LD) $(LDFLAGS) -T FreezeProject/linker.ld -o kernel.bin start.o crt.o serial.o kernel.o
+kernel.bin: start.o crt.o serial.o kernel.o input.o memory.o rtc.o shell.o timer.o vga.o FreezeProject/linker.ld
+	$(LD) $(LDFLAGS) -T FreezeProject/linker.ld -o kernel.bin start.o crt.o serial.o kernel.o input.o memory.o rtc.o shell.o timer.o vga.o
 
 iso/boot/grub/grub.cfg: FreezeProject/grub/grub.cfg
 	mkdir -p iso/boot/grub
