@@ -32,16 +32,11 @@
 
 - [Full Documentation](https://freezeos.org/documentation.html)  
 - [Latest Release](https://freezeos.org/version062.html)
-
-<img width="1703" height="954" alt="Image" src="https://github.com/user-attachments/assets/d1ffdfa1-c304-4aff-8775-508d45b079b1" />
-
-### Diagram two
-
-<img width="2507" height="757" alt="Image" src="https://github.com/user-attachments/assets/19d7f1b9-d75c-4749-ac8e-186394ab03b0" />
+- [Setup on codespace]([https://freezeos.org/version062.html](https://github.com/Clashnewbme/Freeze-Project/blob/main/codespaces.md))
 
 ---
 
-## To run
+## To make files
 
 > make
 > FreezeProject/build/kernel.bin && make run
