@@ -28,10 +28,8 @@ void putc(char c) {
     if (c == '\n') {
         col = 0;
         row++;
-
         serial_putc('\r');
         serial_putc('\n');
-
         if (row >= VGA_HEIGHT) {
             scroll();
         }
@@ -55,9 +53,49 @@ void putc(char c) {
     serial_putc(c);
 }
 
+void handle_ansi(int code) {
+    switch (code) {
+        case 0:  color = 0x07; break;
+        case 30: color = 0x00; break;
+        case 31: color = 0x04; break;
+        case 32: color = 0x02; break;
+        case 33: color = 0x06; break;
+        case 34: color = 0x01; break;
+        case 35: color = 0x05; break;
+        case 36: color = 0x03; break;
+        case 37: color = 0x07; break;
+        case 90: color = 0x08; break;
+        case 91: color = 0x0C; break;
+        case 92: color = 0x0A; break;
+        case 93: color = 0x0E; break;
+        case 94: color = 0x09; break;
+        case 95: color = 0x0D; break;
+        case 96: color = 0x0B; break;
+        case 97: color = 0x0F; break;
+    }
+}
+
 void print(const char* s) {
     for (int i = 0; s[i]; i++) {
-        putc(s[i]);
+        if (s[i] == '\x1b' && s[i+1] == '[') {
+            serial_putc(s[i++]);
+            serial_putc(s[i++]);
+
+            int code = 0;
+
+            while (s[i] >= '0' && s[i] <= '9') {
+                code = code * 10 + (s[i] - '0');
+                serial_putc(s[i]);
+                i++;
+            }
+
+            if (s[i] == 'm') {
+                handle_ansi(code);
+                serial_putc('m');
+            }
+        } else {
+            putc(s[i]);
+        }
     }
 }
 
