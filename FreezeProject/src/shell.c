@@ -755,18 +755,22 @@ void handle_command(char *buf){
     } else if(strcmp(buf, "freezefetch") == 1){
         print("\n");
         
-        print("        █████████████        FreezeOS\n");
-        print("     ███████████████████     ------------\n");
-        print("   ███████████████████████   OS: FreezeOS\n");
-        print("  █████████████████████████  Kernel: x86\n");
-        print(" ████████  ███████  ████████ Version 0.64\n");
-        print(" ███████    █████    ███████ \n");
-        print(" ███████   ██   ██   ███████ \n");
-        print("  ███████   \\___/   ███████ \n");
-        print("   ███████████████████████   \n");
-        print("     ███████████████████     \n");
-        print("        █████████████        \n");
-        print("   ==                 ==    \n");
+        print("\033[36m");
+        print("        *        \n");
+        print("       ***       ------------\n");
+        print("      ** **      OS: FreezeOS\n");
+        print("   * ** * ** *   Kernel: x86\n");
+        print("    ***   ***    Version 0.64\n");
+        print(" * ** * * * ** * \n");
+        print("  **   ***   **  \n");
+        print(" * ** * * * ** * \n");
+        print("    ***   ***    \n");
+        print("   * ** * ** *   \n");
+        print("      ** **      \n");
+        print("       ***       \n");
+        print("        *        \n");
+        print("   ==         == \n");
+        print("\033[0m");
 
         print("\n");
 
