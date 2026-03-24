@@ -21,8 +21,8 @@ int strcmp(const char* a, const char* b) {
 }
 void shell() {
     char buf[128];
-    while (1) {
-        print("\033[95mFreeze-OS>\033[0m ");
+    while(1){
+        print("Freeze-OS> ");
         get_input(buf);
         if (startswith(buf, "sudo ")) {
             print("[sudo] ");
