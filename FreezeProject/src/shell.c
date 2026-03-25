@@ -982,6 +982,7 @@ void handle_command(char* buf) {
     } else if (strcmp(buf, "useradd") == 1) {
         print("Unable to do so.\n");
     } else if (strcmp(buf, "colors") == 1) {
+            print("Warning! Flasing colors..");
     char i = 0;
     while (i < 150) {
 
