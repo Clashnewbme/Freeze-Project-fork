@@ -436,7 +436,7 @@ void handle_command(char* buf) {
         int running = 1;
 
         while (running) {
-            print("\033[96mlibrary> \033[0m");
+            print("\033[96mLibrary> \033[0m");
             get_input(buf);
             // hey reminder to contributor, we are using the
             // https://www.gutenberg.org/ free library, please do not use or add
