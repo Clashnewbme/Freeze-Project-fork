@@ -4,53 +4,100 @@
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
 #define VGA_MEMORY ((volatile uint16_t*)0xB8000)
+#define SCROLLBACK_LINES 1000
 
 volatile uint16_t* vga = VGA_MEMORY;
 
-int row = 0, col = 0;
+uint16_t screen_buffer[SCROLLBACK_LINES][VGA_WIDTH];
+
+int row = 0;
+int col = 0;
+int buffer_row = 0;
+int view_offset = 0;
+
 uint8_t color = 0x02;
 
-void scroll() {
-    for (int y = 1; y < VGA_HEIGHT; y++) {
+static inline void outb(unsigned short port, unsigned char val) {
+    __asm__ volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
+}
+
+static void update_cursor() {
+    int visible_row = VGA_HEIGHT - 1 - view_offset;
+    if (visible_row < 0) visible_row = 0;
+
+    unsigned short pos = visible_row * VGA_WIDTH + col;
+
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (unsigned char)(pos & 0xFF));
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, (unsigned char)((pos >> 8) & 0xFF));
+}
+
+void render() {
+    int start = buffer_row - view_offset - (VGA_HEIGHT - 1);
+    if (start < 0) start = 0;
+
+    for (int y = 0; y < VGA_HEIGHT; y++) {
+        int buf_y = start + y;
+
         for (int x = 0; x < VGA_WIDTH; x++) {
-            vga[(y - 1) * VGA_WIDTH + x] = vga[y * VGA_WIDTH + x];
+            if (buf_y >= 0 && buf_y < SCROLLBACK_LINES)
+                vga[y * VGA_WIDTH + x] = screen_buffer[buf_y][x];
+            else
+                vga[y * VGA_WIDTH + x] = (color << 8) | ' ';
         }
     }
 
-    for (int x = 0; x < VGA_WIDTH; x++) {
-        vga[(VGA_HEIGHT - 1) * VGA_WIDTH + x] = (color << 8) | ' ';
-    }
-
-    row = VGA_HEIGHT - 1;
+    update_cursor();
 }
 
 void putc(char c) {
     if (c == '\n') {
         col = 0;
-        row++;
+        buffer_row++;
+        if (buffer_row >= SCROLLBACK_LINES)
+            buffer_row = SCROLLBACK_LINES - 1;
+
+        view_offset = 0;
+        render();
+
         serial_putc('\r');
         serial_putc('\n');
-        if (row >= VGA_HEIGHT) {
-            scroll();
-        }
         return;
     }
 
-    if (c == '\r') return;
+    if (c == '\r') {
+        col = 0;
+        render();
+        return;
+    }
+
+    screen_buffer[buffer_row][col] = (color << 8) | (uint8_t)c;
+    serial_putc(c);
+
+    col++;
 
     if (col >= VGA_WIDTH) {
         col = 0;
-        row++;
+        buffer_row++;
+        if (buffer_row >= SCROLLBACK_LINES)
+            buffer_row = SCROLLBACK_LINES - 1;
     }
 
-    if (row >= VGA_HEIGHT) {
-        scroll();
-    }
+    view_offset = 0;
+    render();
+}
 
-    vga[row * VGA_WIDTH + col] = (color << 8) | (uint8_t)c;
-    col++;
+void scroll_up() {
+    if (view_offset < SCROLLBACK_LINES - VGA_HEIGHT)
+        view_offset++;
+    render();
+}
 
-    serial_putc(c);
+void scroll_down() {
+    if (view_offset > 0)
+        view_offset--;
+    render();
 }
 
 void handle_ansi(int code) {
@@ -100,12 +147,18 @@ void print(const char* s) {
 }
 
 void clear() {
-    for (int i = 0; i < VGA_WIDTH * VGA_HEIGHT; i++) {
-        vga[i] = (color << 8) | ' ';
+    for (int y = 0; y < SCROLLBACK_LINES; y++) {
+        for (int x = 0; x < VGA_WIDTH; x++) {
+            screen_buffer[y][x] = (color << 8) | ' ';
+        }
     }
 
     row = 0;
     col = 0;
+    buffer_row = 0;
+    view_offset = 0;
+
+    render();
 
     serial_print("\x1b[2J\x1b[H");
 }
@@ -113,14 +166,16 @@ void clear() {
 void erase_last_char() {
     if (col > 0) {
         col--;
-    } else if (row > 0) {
-        row--;
+    } else if (buffer_row > 0) {
+        buffer_row--;
         col = VGA_WIDTH - 1;
     } else {
         return;
     }
 
-    vga[row * VGA_WIDTH + col] = (color << 8) | ' ';
+    screen_buffer[buffer_row][col] = (color << 8) | ' ';
+
+    render();
 
     serial_putc('\b');
     serial_putc(' ');
